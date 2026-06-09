@@ -24,6 +24,8 @@ jobs:
             platform: linux/arm64
             runner: ubuntu-24.04-arm
     runs-on: ${{ matrix.runner }}
+    env:
+      DOCKERHUB_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/new-api
 
     permissions:
       contents: read
@@ -57,7 +59,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            calciumion/new-api
+            ${{ env.DOCKERHUB_IMAGE }}
 
       - name: Build & push single-arch
         uses: docker/build-push-action@v6
@@ -66,8 +68,8 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: true
           tags: |
-            calciumion/new-api:nightly-${{ matrix.arch }}
-            calciumion/new-api:${{ steps.version.outputs.value }}-${{ matrix.arch }}
+            ${{ env.DOCKERHUB_IMAGE }}:nightly-${{ matrix.arch }}
+            ${{ env.DOCKERHUB_IMAGE }}:${{ steps.version.outputs.value }}-${{ matrix.arch }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -78,6 +80,8 @@ jobs:
     name: Create multi-arch manifests (Docker Hub)
     needs: [build_single_arch]
     runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/new-api
 
     steps:
       - name: Check out (shallow)
@@ -101,13 +105,13 @@ jobs:
       - name: Create & push manifest (Docker Hub - nightly)
         run: |
           docker buildx imagetools create \
-            -t calciumion/new-api:nightly \
-            calciumion/new-api:nightly-amd64 \
-            calciumion/new-api:nightly-arm64
+            -t ${DOCKERHUB_IMAGE}:nightly \
+            ${DOCKERHUB_IMAGE}:nightly-amd64 \
+            ${DOCKERHUB_IMAGE}:nightly-arm64
 
       - name: Create & push manifest (Docker Hub - versioned nightly)
         run: |
           docker buildx imagetools create \
-            -t calciumion/new-api:${VERSION} \
-            calciumion/new-api:${VERSION}-amd64 \
-            calciumion/new-api:${VERSION}-arm64
+            -t ${DOCKERHUB_IMAGE}:${VERSION} \
+            ${DOCKERHUB_IMAGE}:${VERSION}-amd64 \
+            ${DOCKERHUB_IMAGE}:${VERSION}-arm64
