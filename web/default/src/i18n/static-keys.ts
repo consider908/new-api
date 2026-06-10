@@ -22,6 +22,7 @@ export const STATIC_I18N_KEYS = [
   // Header navigation
   'Home',
   'Console',
+  'Image Studio',
   'Model Square',
   'Rankings',
   'Docs',
@@ -421,6 +422,7 @@ export const STATIC_I18N_KEYS = [
   'Chat session management',
   'Console Area',
   'Data management and log viewing',
+  'Dedicated workspace for image generation and iteration.',
   'Dashboard',
   'System data statistics',
   'Token Management',

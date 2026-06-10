@@ -24,6 +24,7 @@ export type HeaderNavAccessConfig = {
 export type HeaderNavModulesConfig = {
   home: boolean
   console: boolean
+  imageStudio: HeaderNavAccessConfig | boolean
   pricing: HeaderNavAccessConfig
   rankings: HeaderNavAccessConfig
   docs: boolean
@@ -41,6 +42,7 @@ export type SidebarModulesAdminConfig = Record<string, SidebarSectionConfig>
 export const HEADER_NAV_DEFAULT: HeaderNavModulesConfig = {
   home: true,
   console: true,
+  imageStudio: true,
   pricing: {
     enabled: true,
     requireAuth: false,
@@ -64,6 +66,7 @@ export const SIDEBAR_MODULES_DEFAULT: SidebarModulesAdminConfig = {
     detail: true,
     token: true,
     log: true,
+    image_studio: true,
     midjourney: true,
     task: true,
   },
@@ -149,6 +152,10 @@ export function parseHeaderNavModules(
     }
 
     Object.entries(parsed).forEach(([key, raw]) => {
+      if (key === 'imageStudio') {
+        result.imageStudio = toBoolean(raw, Boolean(base.imageStudio))
+        return
+      }
       if (key === 'pricing') {
         result.pricing = parseAccessModule(raw, base.pricing)
         return

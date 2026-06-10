@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/QuantumNous/new-api/common"
+	"github.com/QuantumNous/new-api/setting/ratio_setting"
 
 	"github.com/samber/lo"
 	"gorm.io/gorm"
@@ -43,6 +44,31 @@ func GetGroupEnabledModels(group string) []string {
 	// Find distinct models
 	DB.Table("abilities").Where(commonGroupCol+" = ? and enabled = ?", group, true).Distinct("model").Pluck("model", &models)
 	return models
+}
+
+func GroupHasEnabledModel(group string, modelName string) bool {
+	if group == "" || modelName == "" {
+		return false
+	}
+
+	var count int64
+	err := DB.Model(&Ability{}).
+		Where(&Ability{Group: group, Model: modelName, Enabled: true}).
+		Count(&count).Error
+	if err == nil && count > 0 {
+		return true
+	}
+
+	normalized := ratio_setting.FormatMatchingModelName(modelName)
+	if normalized == "" || normalized == modelName {
+		return false
+	}
+
+	count = 0
+	err = DB.Model(&Ability{}).
+		Where(&Ability{Group: group, Model: normalized, Enabled: true}).
+		Count(&count).Error
+	return err == nil && count > 0
 }
 
 func GetEnabledModels() []string {

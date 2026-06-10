@@ -49,6 +49,7 @@ import {
 const headerNavSchema = z.object({
   home: z.boolean(),
   console: z.boolean(),
+  imageStudio: z.boolean(),
   pricingEnabled: z.boolean(),
   pricingRequireAuth: z.boolean(),
   rankingsEnabled: z.boolean(),
@@ -71,6 +72,10 @@ const toFormValues = (config: HeaderNavModulesConfig): HeaderNavFormValues => ({
     config.console === undefined
       ? HEADER_NAV_DEFAULT.console
       : Boolean(config.console),
+  imageStudio:
+    config.imageStudio === undefined
+      ? Boolean(HEADER_NAV_DEFAULT.imageStudio)
+      : Boolean(config.imageStudio),
   pricingEnabled:
     config.pricing?.enabled === undefined
       ? HEADER_NAV_DEFAULT.pricing.enabled
@@ -119,6 +124,7 @@ export function HeaderNavigationSection({
       console: values.console,
       docs: values.docs,
       about: values.about,
+      imageStudio: values.imageStudio,
       pricing: {
         ...(config.pricing ?? HEADER_NAV_DEFAULT.pricing),
         enabled: values.pricingEnabled,
@@ -162,14 +168,9 @@ export function HeaderNavigationSection({
       description: t('User dashboard and quota controls.'),
     },
     {
-      key: 'docs',
-      title: t('Docs'),
-      description: t('Documentation or external knowledge base.'),
-    },
-    {
-      key: 'about',
-      title: t('About'),
-      description: t('Static page describing the platform.'),
+      key: 'imageStudio',
+      title: t('Image Studio'),
+      description: t('Dedicated workspace for image generation and iteration.'),
     },
   ]
 
@@ -203,6 +204,23 @@ export function HeaderNavigationSection({
       requireAuthDescription: t(
         'Visitors must authenticate before accessing the rankings page.'
       ),
+    },
+  ]
+
+  const secondarySimpleModules: Array<{
+    key: keyof HeaderNavFormValues
+    title: string
+    description: string
+  }> = [
+    {
+      key: 'docs',
+      title: t('Docs'),
+      description: t('Documentation or external knowledge base.'),
+    },
+    {
+      key: 'about',
+      title: t('About'),
+      description: t('Static page describing the platform.'),
     },
   ]
 
@@ -265,31 +283,58 @@ export function HeaderNavigationSection({
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name={module.requireAuthKey}
-                  render={({ field }) => (
-                    <SettingsControlChildren>
-                      <SettingsSwitchItem className='border-b-0 py-2'>
-                        <SettingsSwitchContent>
-                          <FormLabel>{module.requireAuthTitle}</FormLabel>
-                          <FormDescription>
-                            {module.requireAuthDescription}
-                          </FormDescription>
-                        </SettingsSwitchContent>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                            disabled={!form.watch(module.requireAuthDependsOn)}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </SettingsSwitchItem>
-                    </SettingsControlChildren>
-                  )}
-                />
+                {module.requireAuthTitle ? (
+                  <FormField
+                    control={form.control}
+                    name={module.requireAuthKey}
+                    render={({ field }) => (
+                      <SettingsControlChildren>
+                        <SettingsSwitchItem className='border-b-0 py-2'>
+                          <SettingsSwitchContent>
+                            <FormLabel>{module.requireAuthTitle}</FormLabel>
+                            <FormDescription>
+                              {module.requireAuthDescription}
+                            </FormDescription>
+                          </SettingsSwitchContent>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              disabled={!form.watch(module.requireAuthDependsOn)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </SettingsSwitchItem>
+                      </SettingsControlChildren>
+                    )}
+                  />
+                ) : null}
               </SettingsControlGroup>
+            ))}
+          </div>
+
+          <div className='grid gap-4 md:grid-cols-2'>
+            {secondarySimpleModules.map((module) => (
+              <FormField
+                key={module.key}
+                control={form.control}
+                name={module.key}
+                render={({ field }) => (
+                  <SettingsSwitchItem>
+                    <SettingsSwitchContent>
+                      <FormLabel>{module.title}</FormLabel>
+                      <FormDescription>{module.description}</FormDescription>
+                    </SettingsSwitchContent>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </SettingsSwitchItem>
+                )}
+              />
             ))}
           </div>
         </SettingsForm>

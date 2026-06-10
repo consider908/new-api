@@ -282,6 +282,12 @@ func SetApiRouter(router *gin.Engine) {
 			tokenRoute.POST("/batch/keys", middleware.CriticalRateLimit(), middleware.DisableCache(), controller.GetTokenKeysBatch)
 		}
 
+		imageStudioRoute := apiRouter.Group("/image-studio")
+		imageStudioRoute.Use(middleware.UserAuth())
+		{
+			imageStudioRoute.GET("/keys", controller.GetImageStudioKeys)
+		}
+
 		usageRoute := apiRouter.Group("/usage")
 		usageRoute.Use(middleware.CORS(), middleware.CriticalRateLimit())
 		{

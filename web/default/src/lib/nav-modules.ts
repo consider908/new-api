@@ -25,6 +25,7 @@ export type HeaderNavModule = 'rankings' | 'pricing'
 export type HeaderNavModules = {
   home: boolean
   console: boolean
+  imageStudio: boolean
   pricing: ModuleAccess
   rankings: ModuleAccess
   docs: boolean
@@ -35,6 +36,7 @@ export type HeaderNavModules = {
 const DEFAULT_HEADER_NAV_MODULES: HeaderNavModules = {
   home: true,
   console: true,
+  imageStudio: true,
   pricing: { enabled: true, requireAuth: false },
   rankings: { enabled: true, requireAuth: false },
   docs: true,
@@ -110,6 +112,10 @@ export function parseHeaderNavModules(raw: unknown): HeaderNavModules {
   if (!parsed) return result
 
   Object.entries(parsed).forEach(([key, value]) => {
+    if (key === 'imageStudio') {
+      result.imageStudio = parseHeaderNavBoolean(value, result.imageStudio)
+      return
+    }
     if (key === 'pricing') {
       result.pricing = parseAccess(value, result.pricing)
       return

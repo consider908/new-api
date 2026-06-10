@@ -106,6 +106,10 @@ export function SidebarModulesSection({
         title: t('Usage logs'),
         description: t('Detailed request logs for investigations.'),
       },
+      image_studio: {
+        title: t('Image Studio'),
+        description: t('Dedicated workspace for image generation and iteration.'),
+      },
       midjourney: {
         title: t('Drawing logs'),
         description: t('History of Midjourney-style image tasks.'),

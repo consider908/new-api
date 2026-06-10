@@ -71,6 +71,15 @@ export function useTopNavLinks(): TopNavLink[] {
     links.push({ title: t('Console'), href: '/dashboard' })
   }
 
+  // Image Studio -> /image-studio
+  const imageStudio = modules?.imageStudio
+  if (imageStudio !== false && isAuthed) {
+    links.push({
+      title: t('Image Studio'),
+      href: '/image-studio',
+    })
+  }
+
   // Pricing
   const pricing = modules?.pricing
   if (pricing && typeof pricing === 'object' && pricing.enabled) {
